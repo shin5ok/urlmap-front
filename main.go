@@ -26,6 +26,13 @@ func main() {
 	}
 	client := pb.NewRedirectionClient(conn)
 
+	g.GET("/ping", func(c *gin.Context) {
+		body := map[string]string{
+			"Message": "pong",
+		}
+		c.JSON(http.StatusOK, body)
+	})
+
 	g.GET("/info/:u", func(c *gin.Context) {
 		u := &pb.User{User: c.Param("u")}
 		res, err := client.GetInfoByUser(context.TODO(), u)
