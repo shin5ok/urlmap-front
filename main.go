@@ -17,11 +17,6 @@ import (
 
 var g = gin.Default()
 
-type Register struct {
-	User string
-	Org  string
-}
-
 func main() {
 	host := flag.String("host", "localhost:8080", "host to connect")
 	conn, err := grpc.Dial(*host, grpc.WithInsecure())
@@ -44,12 +39,6 @@ func main() {
 	})
 
 	g.GET("/get/:p", func(c *gin.Context) {
-		// data := &pb.RedirectPath{}
-		// err := c.Bind(data)
-		// if err != nil {
-		// 	c.JSON(http.StatusBadRequest, err)
-		// }
-		// org := &pb.RedirectPath{Path: c.Param("c")}
 		body := map[string]string{
 			"Status": "fail",
 		}
