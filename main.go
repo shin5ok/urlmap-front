@@ -43,6 +43,29 @@ func main() {
 		c.JSON(http.StatusOK, res)
 	})
 
+	g.GET("/get/:p", func(c *gin.Context) {
+		// data := &pb.RedirectPath{}
+		// err := c.Bind(data)
+		// if err != nil {
+		// 	c.JSON(http.StatusBadRequest, err)
+		// }
+		// org := &pb.RedirectPath{Path: c.Param("c")}
+		body := map[string]string{
+			"Status": "fail",
+		}
+
+		path := &pb.RedirectPath{Path: c.Param("p")}
+
+		if res, err := client.GetOrgByPath(context.TODO(), path); err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, body)
+		} else {
+			body["Status"] = "ok"
+			body["Org"] = res.GetOrg()
+			c.JSON(http.StatusOK, body)
+		}
+	})
+
 	g.POST("/register", func(c *gin.Context) {
 		data := &pb.RedirectData{}
 		err := c.Bind(&data.Redirect)
