@@ -17,6 +17,11 @@ import (
 
 var g = gin.Default()
 
+type Register struct {
+	User string
+	Org  string
+}
+
 func main() {
 	host := flag.String("host", "localhost:8080", "host to connect")
 	conn, err := grpc.Dial(*host, grpc.WithInsecure())
@@ -36,6 +41,30 @@ func main() {
 			c.JSON(http.StatusBadRequest, j)
 		}
 		c.JSON(http.StatusOK, res)
+	})
+
+	g.POST("/register", func(c *gin.Context) {
+		data := &pb.RedirectData{}
+		err := c.Bind(&data.Redirect)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err)
+		}
+
+		log.Println(data.Redirect)
+
+		body := map[string]string{
+			"Status": "fail",
+		}
+		if res, err := client.SetInfo(context.TODO(), data); err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, body)
+		} else {
+			log.Println(res)
+			body["Status"] = "ok"
+			body["Data"] = fmt.Sprintf("%s", res.GetOrg())
+			c.JSON(http.StatusAccepted, body)
+		}
+
 	})
 
 	PortString := fmt.Sprintf(":%s", os.Getenv("PORT"))
