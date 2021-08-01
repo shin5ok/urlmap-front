@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -16,7 +15,7 @@ import (
 )
 
 var g = gin.Default()
-var defaultResponse = map[string]string{
+var defaultResponse = map[string]interface{}{
 	"Status": "fail",
 }
 
@@ -37,15 +36,18 @@ func main() {
 	})
 
 	g.GET("/info/:u", func(c *gin.Context) {
+		body := defaultResponse
+
 		u := &pb.User{User: c.Param("u")}
 		res, err := client.GetInfoByUser(context.TODO(), u)
 		if err != nil {
 			log.Println(err)
-			msg := map[string]string{"error": err.Error()}
-			j, _ := json.Marshal(msg)
-			c.JSON(http.StatusBadRequest, j)
+			body["Message"] = err.Error()
+			c.JSON(http.StatusBadRequest, body)
 		}
-		c.JSON(http.StatusOK, res)
+		body["Status"] = "ok"
+		body["Data"] = res
+		c.JSON(http.StatusOK, body)
 	})
 
 	g.GET("/get/:p", func(c *gin.Context) {
