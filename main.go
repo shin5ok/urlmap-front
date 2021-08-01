@@ -16,6 +16,9 @@ import (
 )
 
 var g = gin.Default()
+var defaultResponse = map[string]string{
+	"Status": "fail",
+}
 
 func main() {
 	host := flag.String("host", "localhost:8080", "host to connect")
@@ -46,9 +49,7 @@ func main() {
 	})
 
 	g.GET("/get/:p", func(c *gin.Context) {
-		body := map[string]string{
-			"Status": "fail",
-		}
+		body := defaultResponse
 
 		path := &pb.RedirectPath{Path: c.Param("p")}
 
@@ -71,9 +72,7 @@ func main() {
 
 		log.Println(data.Redirect)
 
-		body := map[string]string{
-			"Status": "fail",
-		}
+		body := defaultResponse
 		if res, err := client.SetInfo(context.TODO(), data); err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, body)
