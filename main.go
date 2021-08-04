@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -16,6 +15,9 @@ import (
 )
 
 var g = gin.Default()
+var defaultResponse = map[string]interface{}{
+	"Status": "fail",
+}
 
 func main() {
 	host := flag.String("host", "localhost:8080", "host to connect")
@@ -34,21 +36,22 @@ func main() {
 	})
 
 	g.GET("/info/:u", func(c *gin.Context) {
+		body := defaultResponse
+
 		u := &pb.User{User: c.Param("u")}
 		res, err := client.GetInfoByUser(context.TODO(), u)
 		if err != nil {
 			log.Println(err)
-			msg := map[string]string{"error": err.Error()}
-			j, _ := json.Marshal(msg)
-			c.JSON(http.StatusBadRequest, j)
+			body["Message"] = err.Error()
+			c.JSON(http.StatusBadRequest, body)
 		}
-		c.JSON(http.StatusOK, res)
+		body["Status"] = "ok"
+		body["Data"] = res
+		c.JSON(http.StatusOK, body)
 	})
 
 	g.GET("/get/:p", func(c *gin.Context) {
-		body := map[string]string{
-			"Status": "fail",
-		}
+		body := defaultResponse
 
 		path := &pb.RedirectPath{Path: c.Param("p")}
 
@@ -71,9 +74,7 @@ func main() {
 
 		log.Println(data.Redirect)
 
-		body := map[string]string{
-			"Status": "fail",
-		}
+		body := defaultResponse
 		if res, err := client.SetInfo(context.TODO(), data); err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, body)
