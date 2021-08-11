@@ -29,6 +29,7 @@ func main() {
 	client := pb.NewRedirectionClient(conn)
 
 	g.GET("/ping", func(c *gin.Context) {
+		log.Println("/ping")
 		body := map[string]string{
 			"Message": "pong",
 		}
@@ -36,9 +37,11 @@ func main() {
 	})
 
 	g.GET("/info/:u", func(c *gin.Context) {
+		user := c.Param("u")
+		log.Printf("/info/%s\n", user)
 		body := defaultResponse
 
-		u := &pb.User{User: c.Param("u")}
+		u := &pb.User{User: user}
 		res, err := client.GetInfoByUser(context.TODO(), u)
 		if err != nil {
 			log.Println(err)
@@ -51,11 +54,13 @@ func main() {
 	})
 
 	g.GET("/get/:p", func(c *gin.Context) {
+		path := c.Param("p")
+		log.Printf("/get/%s\n", path)
 		body := defaultResponse
 
-		path := &pb.RedirectPath{Path: c.Param("p")}
+		rpath := &pb.RedirectPath{Path: path}
 
-		if res, err := client.GetOrgByPath(context.TODO(), path); err != nil {
+		if res, err := client.GetOrgByPath(context.TODO(), rpath); err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, body)
 		} else {
@@ -66,6 +71,7 @@ func main() {
 	})
 
 	g.POST("/register", func(c *gin.Context) {
+		log.Println("/register")
 		data := &pb.RedirectData{}
 		err := c.Bind(&data.Redirect)
 		if err != nil {
