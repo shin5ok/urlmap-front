@@ -69,6 +69,7 @@ func main() {
 		data := &pb.RedirectData{}
 		err := c.Bind(&data.Redirect)
 		if err != nil {
+			log.Println(err)
 			c.JSON(http.StatusBadRequest, err)
 		}
 
