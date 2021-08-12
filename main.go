@@ -28,10 +28,10 @@ func main() {
 	}
 	client := pb.NewRedirectionClient(conn)
 
-	g.GET("/ping", func(c *gin.Context) {
-		log.Println("/ping")
+	g.GET("/Ping", func(c *gin.Context) {
+		log.Println("/Ping")
 		body := map[string]string{
-			"Message": "pong",
+			"Message": "Pong",
 		}
 		c.JSON(http.StatusOK, body)
 	})
