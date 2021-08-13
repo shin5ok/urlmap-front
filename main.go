@@ -15,8 +15,12 @@ import (
 )
 
 var g = gin.Default()
-var defaultResponse = map[string]interface{}{
-	"Status": "fail",
+
+func initDefaultResponse() map[string]interface{} {
+	return map[string]interface{}{
+		"Status":  "fail",
+		"Message": "",
+	}
 }
 
 func main() {
@@ -39,7 +43,8 @@ func main() {
 	g.GET("/info/:u", func(c *gin.Context) {
 		user := c.Param("u")
 		log.Printf("/info/%s\n", user)
-		body := defaultResponse
+		body := initDefaultResponse()
+		fmt.Println(body)
 
 		u := &pb.User{User: user}
 		res, err := client.GetInfoByUser(context.TODO(), u)
@@ -56,7 +61,7 @@ func main() {
 	g.GET("/get/:p", func(c *gin.Context) {
 		path := c.Param("p")
 		log.Printf("/get/%s\n", path)
-		body := defaultResponse
+		body := initDefaultResponse()
 
 		rpath := &pb.RedirectPath{Path: path}
 
@@ -81,7 +86,7 @@ func main() {
 
 		log.Println(data.Redirect)
 
-		body := defaultResponse
+		body := initDefaultResponse()
 		if res, err := client.SetInfo(context.TODO(), data); err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, body)
