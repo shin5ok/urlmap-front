@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -24,8 +23,11 @@ func initDefaultResponse() map[string]interface{} {
 }
 
 func main() {
-	host := flag.String("host", "0.0.0.0:8080", "host to connect")
-	conn, err := grpc.Dial(*host, grpc.WithInsecure())
+	host := os.Getenv("URLMAP_HOST")
+	if host == "" {
+		host = "localhost:8080"
+	}
+	conn, err := grpc.Dial(host, grpc.WithInsecure())
 
 	if err != nil {
 		log.Println(err)
