@@ -35,6 +35,7 @@ func main() {
 	g.GET("/Ping", func(c *gin.Context) {
 		log.Println("/Ping")
 		body := initDefaultResponse()
+		body["Status"] = "ok"
 		body["Message"] = "Pong"
 		c.JSON(http.StatusOK, body)
 	})
