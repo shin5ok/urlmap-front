@@ -23,7 +23,7 @@ func initDefaultResponse() map[string]interface{} {
 }
 
 func main() {
-	host := os.Getenv("URLMAP_HOST")
+	host := os.Getenv("URLMAP_API")
 	if host == "" {
 		host = "localhost:8080"
 	}
