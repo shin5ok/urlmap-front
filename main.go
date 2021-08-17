@@ -34,12 +34,18 @@ func main() {
 	}
 	client := pb.NewRedirectionClient(conn)
 
+	g.GET("/", func(c *gin.Context) {
+		body := initDefaultResponse()
+		body["Status"] = "ok"
+		c.JSON(http.StatusOK, body)
+	})
+
 	g.GET("/Ping", func(c *gin.Context) {
 		log.Println("/Ping")
 		body := initDefaultResponse()
 		body["Status"] = "ok"
 		body["Message"] = "Pong"
-		body["Version"] = "0.64"
+		body["Version"] = "0.68"
 		c.JSON(http.StatusOK, body)
 	})
 
