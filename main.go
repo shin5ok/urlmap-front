@@ -94,7 +94,7 @@ func main() {
 		body := initDefaultResponse()
 		if res, err := client.SetInfo(context.TODO(), data); err != nil {
 			log.Println(err)
-			body["Message"] = err
+			body["Message"] = err.Error()
 			c.JSON(http.StatusInternalServerError, body)
 		} else {
 			log.Println(res)
