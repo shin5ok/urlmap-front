@@ -82,6 +82,7 @@ func main() {
 		log.Println("/register")
 		data := &pb.RedirectData{}
 		err := c.Bind(&data.Redirect)
+		fmt.Printf("%+v\n", data)
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusBadRequest, err)
