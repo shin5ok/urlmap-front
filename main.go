@@ -45,7 +45,7 @@ func main() {
 		body := initDefaultResponse()
 		body["Status"] = "ok"
 		body["Message"] = "Pong"
-		body["Version"] = "0.68"
+		body["Version"] = "0.28"
 		c.JSON(http.StatusOK, body)
 	})
 
