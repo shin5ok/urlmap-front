@@ -110,6 +110,32 @@ func main() {
 		c.JSON(http.StatusAccepted, body)
 	})
 
+	g.DELETE("/user", func(c *gin.Context) {
+		log.Println("/user delete and user's entries")
+		data := &pb.User{}
+		err := c.Bind(&data)
+
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusBadRequest, err)
+		}
+
+		body := initDefaultResponse()
+
+		u := &pb.User{User: data.User}
+
+		if res, err := client.RemoveUser(context.TODO(), u); err != nil {
+			log.Printf("%+v\n", err)
+			body["Message"] = err
+			c.JSON(http.StatusInternalServerError, body)
+		} else {
+			body["Status"] = "ok"
+			body["Data"] = fmt.Sprintf("%s is Removed with entries", u.User)
+			body["Message"] = res
+		}
+		c.JSON(http.StatusAccepted, body)
+	})
+
 	g.POST("/register", func(c *gin.Context) {
 		log.Println("/register")
 		data := &pb.RedirectData{}
