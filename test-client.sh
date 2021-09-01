@@ -6,5 +6,7 @@ curl -s ${HOST}/register -H 'Content-Type: application/json' -d '{"org":"https:/
 curl -s ${HOST}/info/user -H 'Content-Type: application/json'
 # create user
 curl -s ${HOST}/user -H 'Content-Type: application/json' -d '{"user":"tako","notify_to":"slack#log"}'
+# delete user
+curl -s ${HOST}/user -H 'Content-Type: application/json' -d '{"user":"tako"}' -X DELETE
 # get path
 curl -s ${HOST}/get/foo -H 'Content-Type: application/json'
