@@ -84,7 +84,7 @@ func main() {
 		}
 	})
 
-	g.POST("/user", func(c *gin.Context) {
+	g.POST("/user/:u", func(c *gin.Context) {
 		log.Println("/user create or update")
 		data := &pb.User{}
 		err := c.Bind(&data)
@@ -96,7 +96,8 @@ func main() {
 
 		body := initDefaultResponse()
 
-		u := &pb.User{User: data.User, NotifyTo: data.NotifyTo}
+		user := c.Param("u")
+		u := &pb.User{User: user, NotifyTo: data.NotifyTo}
 
 		if res, err := client.SetUser(context.TODO(), u); err != nil {
 			log.Printf("%+v\n", err)
