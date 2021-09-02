@@ -111,19 +111,13 @@ func main() {
 		c.JSON(http.StatusAccepted, body)
 	})
 
-	g.DELETE("/user", func(c *gin.Context) {
+	g.DELETE("/user/:u", func(c *gin.Context) {
 		log.Println("/user delete and user's entries")
-		data := &pb.User{}
-		err := c.Bind(&data)
-
-		if err != nil {
-			log.Println(err)
-			c.JSON(http.StatusBadRequest, err)
-		}
 
 		body := initDefaultResponse()
 
-		u := &pb.User{User: data.User}
+		user := c.Param("u")
+		u := &pb.User{User: user}
 
 		if res, err := client.RemoveUser(context.TODO(), u); err != nil {
 			log.Printf("%+v\n", err)
