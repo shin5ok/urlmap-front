@@ -10,6 +10,7 @@ import (
 	pb "urlmap-front/pb"
 
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
 
@@ -23,6 +24,10 @@ func initDefaultResponse() map[string]interface{} {
 }
 
 func main() {
+	var logger, _ = zap.NewProduction()
+	defer logger.Sync()
+	suger := logger.Sugar()
+
 	host := os.Getenv("URLMAP_API")
 	if host == "" {
 		host = "localhost:8080"
@@ -30,6 +35,7 @@ func main() {
 	conn, err := grpc.Dial(host, grpc.WithInsecure())
 
 	if err != nil {
+		suger.Infow(err.Error())
 		log.Println(err)
 	}
 	client := pb.NewRedirectionClient(conn)
@@ -37,6 +43,10 @@ func main() {
 	g.GET("/", func(c *gin.Context) {
 		body := initDefaultResponse()
 		body["Status"] = "ok"
+		// suger logging which is simple and little slower than using logger directly
+		suger.Infow("/", "status", body["Status"])
+		// logger method which we should use when we need high performance
+		logger.Info("/", zap.String("body_status", body["Status"].(string)))
 		c.JSON(http.StatusOK, body)
 	})
 
