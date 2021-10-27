@@ -32,7 +32,7 @@ func main() {
 
 	host := os.Getenv("URLMAP_API")
 	if host == "" {
-		host = "localhost:8080"
+		host = "urlmap-api:8080"
 	}
 	conn, err := grpc.Dial(host, grpc.WithInsecure())
 
