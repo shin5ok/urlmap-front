@@ -16,6 +16,8 @@ import (
 
 var g = gin.Default()
 
+var version string = "0.01"
+
 func initDefaultResponse() map[string]interface{} {
 	return map[string]interface{}{
 		"Status":  "fail",
@@ -55,7 +57,7 @@ func main() {
 		body := initDefaultResponse()
 		body["Status"] = "ok"
 		body["Message"] = "Pong"
-		body["Version"] = "1.00"
+		body["Version"] = version
 		c.JSON(http.StatusOK, body)
 	})
 
