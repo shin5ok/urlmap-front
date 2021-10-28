@@ -16,7 +16,7 @@ import (
 
 var g = gin.Default()
 
-var version string = "0.10"
+var version string = "0.11"
 
 func initDefaultResponse() map[string]interface{} {
 	return map[string]interface{}{
