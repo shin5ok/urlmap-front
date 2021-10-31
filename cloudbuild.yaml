@@ -13,9 +13,9 @@ steps:
       git clone https://$$TOKEN@github.com/shin5ok/gitops-urlmap working.$SHORT_SHA
       cd working.$SHORT_SHA
       git checkout stage && git merge origin/template -m Merge_from_template
-      cd urlmap-front
+      cd urlmap-front/base
       ls -l
-      sed -e "s/SHORT_SHA/${SHORT_SHA}/" base/deployment.yaml.tpl | sed -e "s/PROJECT_ID/${PROJECT_ID}/" > base/deployment.yaml
+      sed -e "s/SHORT_SHA/${SHORT_SHA}/" deployment.yaml.tpl | sed -e "s/PROJECT_ID/${PROJECT_ID}/" > deployment.yaml
       git add .
       git commit -va -m "Update by GitOps"
       git push origin stage
