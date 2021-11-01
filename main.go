@@ -12,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 var g = gin.Default()
@@ -174,6 +175,21 @@ func main() {
 	if PortString == ":" {
 		PortString = ":8080"
 	}
+
+	g.GET("/listusers", func(c *gin.Context) {
+		log.Printf("/listusers\n")
+		body := initDefaultResponse()
+
+		if res, err := client.ListUsers(context.TODO(), &emptypb.Empty{}); err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, body)
+		} else {
+			body["Status"] = "ok"
+			body["List"] = res.Users
+			c.JSON(http.StatusOK, body)
+		}
+	})
+
 	g.Run(PortString)
 
 }
