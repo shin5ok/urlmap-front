@@ -165,7 +165,7 @@ func main() {
 		} else {
 			log.Println(res)
 			body["Status"] = "ok"
-			body["Data"] = fmt.Sprintf("%s", res.GetOrg())
+			body["Data"] = res.GetOrg()
 			c.JSON(http.StatusAccepted, body)
 		}
 
