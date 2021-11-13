@@ -26,6 +26,15 @@ func initDefaultResponse() map[string]interface{} {
 	}
 }
 
+func Ping(c *gin.Context) {
+	log.Println("/Ping")
+	body := initDefaultResponse()
+	body["Status"] = "ok"
+	body["Message"] = "Pong"
+	body["Version"] = version
+	c.JSON(http.StatusOK, body)
+}
+
 func main() {
 	var logger, _ = zap.NewProduction()
 	defer logger.Sync()
@@ -53,14 +62,7 @@ func main() {
 		c.JSON(http.StatusOK, body)
 	})
 
-	g.GET("/Ping", func(c *gin.Context) {
-		log.Println("/Ping")
-		body := initDefaultResponse()
-		body["Status"] = "ok"
-		body["Message"] = "Pong"
-		body["Version"] = version
-		c.JSON(http.StatusOK, body)
-	})
+	g.GET("/Ping", Ping)
 
 	g.GET("/info/:u", func(c *gin.Context) {
 		user := c.Param("u")
