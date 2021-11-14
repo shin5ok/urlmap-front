@@ -11,14 +11,15 @@ import (
 )
 
 func TestPing(t *testing.T) {
-	recorder := httptest.NewRecorder()
-	context, _ := gin.CreateTestContext(recorder)
+	w := httptest.NewRecorder()
+	context, _ := gin.CreateTestContext(w)
+	router := gin.Default()
 
 	req, _ := http.NewRequest("GET", "/Ping", nil)
 	context.Request = req
-	Ping(context)
-	// asserts := assert.New(t)
+	router.GET("/", Ping)
+	// router.ServeHTTP(w, req)
 	t.Run("test /Ping", func(t *testing.T) {
-		assert.Equal(t, http.StatusOK, recorder.Code)
+		assert.Equal(t, http.StatusOK, w.Code)
 	})
 }
