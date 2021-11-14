@@ -35,7 +35,7 @@ func Ping(c *gin.Context) {
 	c.JSON(http.StatusOK, body)
 }
 
-func main() {
+func CreateRouter() *gin.Engine {
 	var logger, _ = zap.NewProduction()
 	defer logger.Sync()
 	suger := logger.Sugar()
@@ -173,11 +173,6 @@ func main() {
 
 	})
 
-	PortString := fmt.Sprintf(":%s", os.Getenv("PORT"))
-	if PortString == ":" {
-		PortString = ":8080"
-	}
-
 	g.GET("/listusers", func(c *gin.Context) {
 		log.Printf("/listusers\n")
 		body := initDefaultResponse()
@@ -192,6 +187,16 @@ func main() {
 		}
 	})
 
-	g.Run(PortString)
+	// g.Run(PortString)
+	return g
 
+}
+
+func main() {
+	PortString := fmt.Sprintf(":%s", os.Getenv("PORT"))
+	if PortString == ":" {
+		PortString = ":8080"
+	}
+
+	CreateRouter().Run(PortString)
 }
