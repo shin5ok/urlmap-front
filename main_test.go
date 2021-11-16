@@ -9,9 +9,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var testg = CreateRouter()
+var testg *gin.Engine
 
 func TestPing(t *testing.T) {
+	if testg == nil {
+		testg = CreateRouter()
+	}
+
 	gin.SetMode(gin.TestMode)
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
@@ -30,4 +34,19 @@ func TestPing(t *testing.T) {
 	// // assert.NoError(t, c.BindJSON(&obj))
 	// log.Printf("%+v", obj)
 	// assert.Equal(t, "Pong", obj.Message)
+}
+
+func TestRoot(t *testing.T) {
+	if testg == nil {
+		testg = CreateRouter()
+	}
+
+	gin.SetMode(gin.TestMode)
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request, _ = http.NewRequest(http.MethodGet, "/", nil)
+
+	testg.ServeHTTP(w, c.Request)
+
+	assert.Equal(t, http.StatusOK, w.Code)
 }
