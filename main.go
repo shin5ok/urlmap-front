@@ -129,7 +129,7 @@ func CreateRouter() *gin.Engine {
 		u := &pb.User{User: user}
 
 		if res, err := client.RemoveUser(context.TODO(), u); err != nil {
-			log.Error().Msg(fmt.Sprintf("%+v", err))
+			log.Error().Msg(err.Error())
 			body["Message"] = err
 			c.JSON(http.StatusInternalServerError, body)
 		} else {
@@ -151,7 +151,7 @@ func CreateRouter() *gin.Engine {
 			c.JSON(http.StatusBadRequest, err)
 		}
 
-		log.Info().Msg(fmt.Sprintf("%s", data.Redirect))
+		log.Info().Msg(fmt.Sprintf("%+v", data.Redirect))
 
 		body := initDefaultResponse()
 		if res, err := client.SetInfo(context.TODO(), data); err != nil {
@@ -159,7 +159,7 @@ func CreateRouter() *gin.Engine {
 			body["Message"] = err.Error()
 			c.JSON(http.StatusInternalServerError, body)
 		} else {
-			log.Info().Msg(fmt.Sprintf("%-v", res))
+			log.Info().Msg(fmt.Sprintf("%+v", res))
 			body["Status"] = "ok"
 			body["Data"] = res.GetOrg()
 			c.JSON(http.StatusAccepted, body)
@@ -180,8 +180,6 @@ func CreateRouter() *gin.Engine {
 			c.JSON(http.StatusOK, body)
 		}
 	})
-
-	// g.Run(PortString)
 	return g
 
 }
