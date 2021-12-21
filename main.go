@@ -26,7 +26,7 @@ func initDefaultResponse() map[string]interface{} {
 }
 
 func Ping(c *gin.Context) {
-	log.Info().Str("method", "Ping").Msg("/ping")
+	log.Info().Str("method", "Ping").Send()
 	body := initDefaultResponse()
 	body["Status"] = "ok"
 	body["Message"] = "Pong"
