@@ -3,14 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 
 	pb "urlmap-front/pb"
 
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
+	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
@@ -27,7 +26,7 @@ func initDefaultResponse() map[string]interface{} {
 }
 
 func Ping(c *gin.Context) {
-	log.Println("/Ping")
+	log.Info().Str("method", "Ping").Msg("/ping")
 	body := initDefaultResponse()
 	body["Status"] = "ok"
 	body["Message"] = "Pong"
@@ -36,9 +35,6 @@ func Ping(c *gin.Context) {
 }
 
 func CreateRouter() *gin.Engine {
-	var logger, _ = zap.NewProduction()
-	defer logger.Sync()
-	suger := logger.Sugar()
 
 	host := os.Getenv("URLMAP_API")
 	if host == "" {
@@ -47,18 +43,16 @@ func CreateRouter() *gin.Engine {
 	conn, err := grpc.Dial(host, grpc.WithInsecure())
 
 	if err != nil {
-		suger.Infow(err.Error())
-		log.Println(err)
+		log.Error().Msg(err.Error())
 	}
 	client := pb.NewRedirectionClient(conn)
 
 	g.GET("/", func(c *gin.Context) {
 		body := initDefaultResponse()
 		body["Status"] = "ok"
-		// suger logging which is simple and little slower than using logger directly
-		suger.Infow("/", "status", body["Status"])
-		// logger method which we should use when we need high performance
-		logger.Info("/", zap.String("body_status", body["Status"].(string)))
+		log.Info().
+			Str("path", "/").
+			Str("status", body["Status"].(string))
 		c.JSON(http.StatusOK, body)
 	})
 
@@ -66,14 +60,14 @@ func CreateRouter() *gin.Engine {
 
 	g.GET("/info/:u", func(c *gin.Context) {
 		user := c.Param("u")
-		log.Printf("/info/%s\n", user)
+		log.Info().Msg("/info/" + user)
 		body := initDefaultResponse()
 		fmt.Println(body)
 
 		u := &pb.User{User: user}
 		res, err := client.GetInfoByUser(context.TODO(), u)
 		if err != nil {
-			log.Println(err)
+			log.Error().Msg(err.Error())
 			body["Message"] = err.Error()
 			c.JSON(http.StatusBadRequest, body)
 		}
@@ -84,13 +78,13 @@ func CreateRouter() *gin.Engine {
 
 	g.GET("/get/:p", func(c *gin.Context) {
 		path := c.Param("p")
-		log.Printf("/get/%s\n", path)
+		log.Info().Msg("/get/" + path)
 		body := initDefaultResponse()
 
 		rpath := &pb.RedirectPath{Path: path}
 
 		if res, err := client.GetOrgByPath(context.TODO(), rpath); err != nil {
-			log.Println(err)
+			log.Error().Msg(err.Error())
 			c.JSON(http.StatusInternalServerError, body)
 		} else {
 			body["Status"] = "ok"
@@ -100,12 +94,12 @@ func CreateRouter() *gin.Engine {
 	})
 
 	g.POST("/user/:u", func(c *gin.Context) {
-		log.Println("/user create or update")
+		log.Info().Msg("/user create or update")
 		data := &pb.User{}
 		err := c.Bind(&data)
 
 		if err != nil {
-			log.Println(err)
+			log.Error().Msg(err.Error())
 			c.JSON(http.StatusBadRequest, err)
 		}
 
@@ -115,7 +109,7 @@ func CreateRouter() *gin.Engine {
 		u := &pb.User{User: user, NotifyTo: data.NotifyTo}
 
 		if res, err := client.SetUser(context.TODO(), u); err != nil {
-			log.Printf("%+v\n", err)
+			log.Info().Msg(fmt.Sprintf("%+v", err))
 			body["Message"] = err
 			c.JSON(http.StatusInternalServerError, body)
 		} else {
@@ -127,7 +121,7 @@ func CreateRouter() *gin.Engine {
 	})
 
 	g.DELETE("/user/:u", func(c *gin.Context) {
-		log.Println("/user delete and user's entries")
+		log.Info().Msg("/user delete and user's entries")
 
 		body := initDefaultResponse()
 
@@ -135,7 +129,7 @@ func CreateRouter() *gin.Engine {
 		u := &pb.User{User: user}
 
 		if res, err := client.RemoveUser(context.TODO(), u); err != nil {
-			log.Printf("%+v\n", err)
+			log.Error().Msg(fmt.Sprintf("%+v", err))
 			body["Message"] = err
 			c.JSON(http.StatusInternalServerError, body)
 		} else {
@@ -147,25 +141,25 @@ func CreateRouter() *gin.Engine {
 	})
 
 	g.POST("/register", func(c *gin.Context) {
-		log.Println("/register")
+		log.Info().Msg("/register")
 		data := &pb.RedirectData{}
 		err := c.Bind(&data.Redirect)
-		log.Printf("%+v\n", data)
+		log.Debug().Msg(fmt.Sprintf("%+v", data))
 
 		if err != nil {
-			log.Println(err)
+			log.Error().Msg(err.Error())
 			c.JSON(http.StatusBadRequest, err)
 		}
 
-		log.Println(data.Redirect)
+		log.Info().Msg(fmt.Sprintf("%s", data.Redirect))
 
 		body := initDefaultResponse()
 		if res, err := client.SetInfo(context.TODO(), data); err != nil {
-			log.Println(err)
+			log.Error().Msg(err.Error())
 			body["Message"] = err.Error()
 			c.JSON(http.StatusInternalServerError, body)
 		} else {
-			log.Println(res)
+			log.Info().Msg(fmt.Sprintf("%-v", res))
 			body["Status"] = "ok"
 			body["Data"] = res.GetOrg()
 			c.JSON(http.StatusAccepted, body)
@@ -174,11 +168,11 @@ func CreateRouter() *gin.Engine {
 	})
 
 	g.GET("/listusers", func(c *gin.Context) {
-		log.Printf("/listusers\n")
+		log.Info().Msg("/listusers\n")
 		body := initDefaultResponse()
 
 		if res, err := client.ListUsers(context.TODO(), &emptypb.Empty{}); err != nil {
-			log.Println(err)
+			log.Error().Msg(err.Error())
 			c.JSON(http.StatusInternalServerError, body)
 		} else {
 			body["Status"] = "ok"
