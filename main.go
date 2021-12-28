@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	pb "urlmap-front/pb"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -17,6 +19,11 @@ import (
 var g = gin.Default()
 
 var version string = "0.12"
+
+func init() {
+	zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	zerolog.TimeFieldFormat = time.RFC3339
+}
 
 func initDefaultResponse() map[string]interface{} {
 	return map[string]interface{}{
