@@ -50,7 +50,7 @@ func CreateRouter() *gin.Engine {
 	conn, err := grpc.Dial(host, grpc.WithInsecure())
 
 	if err != nil {
-		log.Error().Msg(err.Error())
+		log.Error().Err(err)
 	}
 	client := pb.NewRedirectionClient(conn)
 
@@ -74,7 +74,7 @@ func CreateRouter() *gin.Engine {
 		u := &pb.User{User: user}
 		res, err := client.GetInfoByUser(context.TODO(), u)
 		if err != nil {
-			log.Error().Msg(err.Error())
+			log.Error().Err(err)
 			body["Message"] = err.Error()
 			c.JSON(http.StatusBadRequest, body)
 		}
@@ -91,7 +91,7 @@ func CreateRouter() *gin.Engine {
 		rpath := &pb.RedirectPath{Path: path}
 
 		if res, err := client.GetOrgByPath(context.TODO(), rpath); err != nil {
-			log.Error().Msg(err.Error())
+			log.Error().Err(err)
 			c.JSON(http.StatusInternalServerError, body)
 		} else {
 			body["Status"] = "ok"
@@ -106,7 +106,7 @@ func CreateRouter() *gin.Engine {
 		err := c.Bind(&data)
 
 		if err != nil {
-			log.Error().Msg(err.Error())
+			log.Error().Err(err)
 			c.JSON(http.StatusBadRequest, err)
 		}
 
@@ -116,7 +116,7 @@ func CreateRouter() *gin.Engine {
 		u := &pb.User{User: user, NotifyTo: data.NotifyTo}
 
 		if res, err := client.SetUser(context.TODO(), u); err != nil {
-			log.Info().Msg(fmt.Sprintf("%+v", err))
+			log.Info().Msgf("%+v", err)
 			body["Message"] = err
 			c.JSON(http.StatusInternalServerError, body)
 		} else {
@@ -136,7 +136,7 @@ func CreateRouter() *gin.Engine {
 		u := &pb.User{User: user}
 
 		if res, err := client.RemoveUser(context.TODO(), u); err != nil {
-			log.Error().Msg(err.Error())
+			log.Error().Err(err)
 			body["Message"] = err
 			c.JSON(http.StatusInternalServerError, body)
 		} else {
@@ -151,22 +151,22 @@ func CreateRouter() *gin.Engine {
 		log.Info().Msg("/register")
 		data := &pb.RedirectData{}
 		err := c.Bind(&data.Redirect)
-		log.Debug().Msg(fmt.Sprintf("%+v", data))
+		log.Debug().Msgf("%+v", data)
 
 		if err != nil {
-			log.Error().Msg(err.Error())
+			log.Error().Err(err)
 			c.JSON(http.StatusBadRequest, err)
 		}
 
-		log.Info().Msg(fmt.Sprintf("%+v", data.Redirect))
+		log.Info().Msgf("%+v", data.Redirect)
 
 		body := initDefaultResponse()
 		if res, err := client.SetInfo(context.TODO(), data); err != nil {
-			log.Error().Msg(err.Error())
+			log.Error().Err(err)
 			body["Message"] = err.Error()
 			c.JSON(http.StatusInternalServerError, body)
 		} else {
-			log.Info().Msg(fmt.Sprintf("%+v", res))
+			log.Info().Msgf("%+v", res)
 			body["Status"] = "ok"
 			body["Data"] = res.GetOrg()
 			c.JSON(http.StatusAccepted, body)
@@ -179,7 +179,7 @@ func CreateRouter() *gin.Engine {
 		body := initDefaultResponse()
 
 		if res, err := client.ListUsers(context.TODO(), &emptypb.Empty{}); err != nil {
-			log.Error().Msg(err.Error())
+			log.Error().Err(err)
 			c.JSON(http.StatusInternalServerError, body)
 		} else {
 			body["Status"] = "ok"
