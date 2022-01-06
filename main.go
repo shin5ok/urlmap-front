@@ -22,7 +22,9 @@ var version string = "0.12"
 
 func init() {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	zerolog.TimeFieldFormat = time.RFC3339
+	zerolog.LevelFieldName = "severity"
+	zerolog.TimestampFieldName = "timestamp"
+	zerolog.TimeFieldFormat = time.RFC3339Nano
 }
 
 func initDefaultResponse() map[string]interface{} {
