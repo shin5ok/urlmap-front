@@ -5,8 +5,7 @@ go 1.15
 require (
 	github.com/gin-gonic/gin v1.7.2
 	github.com/golang/protobuf v1.5.0
-	github.com/kr/pretty v0.1.0 // indirect
-	github.com/penglongli/gin-metrics v0.1.9 // indirect
+	github.com/penglongli/gin-metrics v0.1.9
 	github.com/rs/zerolog v1.26.1
 	github.com/stretchr/testify v1.7.0
 	google.golang.org/grpc v1.39.0
