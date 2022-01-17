@@ -10,21 +10,30 @@ import (
 	pb "urlmap-front/pb"
 
 	"github.com/gin-gonic/gin"
+	"github.com/penglongli/gin-metrics/ginmetrics"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-var g = gin.Default()
+var (
+	g              = gin.Default()
+	version string = "0.12"
 
-var version string = "0.12"
+	m = ginmetrics.GetMonitor()
+)
 
 func init() {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	zerolog.LevelFieldName = "severity"
 	zerolog.TimestampFieldName = "timestamp"
 	zerolog.TimeFieldFormat = time.RFC3339Nano
+
+	m.SetMetricPath("/metrics")
+	m.SetSlowTime(10)
+	m.SetDuration([]float64{0.1, 0.3, 1.2, 5, 10})
+	m.Use(g)
 }
 
 func initDefaultResponse() map[string]interface{} {
