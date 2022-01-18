@@ -18,10 +18,9 @@ import (
 )
 
 var (
-	g              = gin.Default()
-	version string = "0.12"
-
-	m = ginmetrics.GetMonitor()
+	g                 = gin.Default()
+	version    string = "0.12"
+	portString        = fmt.Sprintf(":%s", os.Getenv("PORT"))
 )
 
 func init() {
@@ -30,10 +29,6 @@ func init() {
 	zerolog.TimestampFieldName = "timestamp"
 	zerolog.TimeFieldFormat = time.RFC3339Nano
 
-	m.SetMetricPath("/metrics")
-	m.SetSlowTime(10)
-	m.SetDuration([]float64{0.1, 0.3, 1.2, 5, 10})
-	m.Use(g)
 }
 
 func initDefaultResponse() map[string]interface{} {
@@ -203,10 +198,24 @@ func CreateRouter() *gin.Engine {
 }
 
 func main() {
-	PortString := fmt.Sprintf(":%s", os.Getenv("PORT"))
-	if PortString == ":" {
-		PortString = ":8080"
+	// for prom agent ref: https://github.com/penglongli/gin-metrics
+	forProm := gin.Default()
+
+	m := ginmetrics.GetMonitor()
+	m.SetMetricPath("/metrics")
+	m.SetSlowTime(10)
+	m.UseWithoutExposingEndpoint(g)
+	m.Expose(forProm)
+
+	go func() {
+		forProm.Run(":8081")
+	}()
+
+	if portString == ":" {
+		portString = ":8080"
 	}
 
-	CreateRouter().Run(PortString)
+	g := CreateRouter()
+	g.Run(portString)
+
 }
