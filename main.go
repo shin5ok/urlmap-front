@@ -18,9 +18,9 @@ import (
 )
 
 var (
-	g                 = gin.Default()
-	version    string = "0.12"
-	portString        = fmt.Sprintf(":%s", os.Getenv("PORT"))
+	g          = gin.Default()
+	version    = "0.12"
+	portString = fmt.Sprintf(":%s", os.Getenv("PORT"))
 )
 
 func init() {
@@ -73,7 +73,7 @@ func CreateRouter() *gin.Engine {
 
 	g.GET("/info/:u", func(c *gin.Context) {
 		user := c.Param("u")
-		log.Info().Msg("/info/" + user)
+		log.Info().Msgf("/info/%s", user)
 		body := initDefaultResponse()
 		fmt.Println(body)
 
@@ -91,7 +91,7 @@ func CreateRouter() *gin.Engine {
 
 	g.GET("/get/:p", func(c *gin.Context) {
 		path := c.Param("p")
-		log.Info().Msg("/get/" + path)
+		log.Info().Msgf("/get/%s", path)
 		body := initDefaultResponse()
 
 		rpath := &pb.RedirectPath{Path: path}
@@ -107,7 +107,6 @@ func CreateRouter() *gin.Engine {
 	})
 
 	g.POST("/user/:u", func(c *gin.Context) {
-		log.Info().Msg("/user create or update")
 		data := &pb.User{}
 		err := c.Bind(&data)
 
@@ -119,6 +118,7 @@ func CreateRouter() *gin.Engine {
 		body := initDefaultResponse()
 
 		user := c.Param("u")
+		log.Info().Msgf("/user/%s create or update", user)
 		u := &pb.User{User: user, NotifyTo: data.NotifyTo}
 
 		if res, err := client.SetUser(context.TODO(), u); err != nil {
@@ -134,11 +134,11 @@ func CreateRouter() *gin.Engine {
 	})
 
 	g.DELETE("/user/:u", func(c *gin.Context) {
-		log.Info().Msg("/user delete and user's entries")
 
 		body := initDefaultResponse()
 
 		user := c.Param("u")
+		log.Info().Msgf("/user/%s delete and user's entries", user)
 		u := &pb.User{User: user}
 
 		if res, err := client.RemoveUser(context.TODO(), u); err != nil {
