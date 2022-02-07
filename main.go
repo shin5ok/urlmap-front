@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	pb "urlmap-front/pb"
+	pb "github.com/shin5ok/urlmap-front/pb"
 
 	"github.com/gin-gonic/gin"
 	"github.com/penglongli/gin-metrics/ginmetrics"
