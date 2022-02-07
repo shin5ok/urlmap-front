@@ -1,4 +1,4 @@
-module urlmap-front
+module github.com/shin5ok/urlmap-front
 
 go 1.15
 
