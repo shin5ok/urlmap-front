@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -49,4 +50,11 @@ func TestRoot(t *testing.T) {
 	testg.ServeHTTP(w, c.Request)
 
 	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func Test_initDefaultResponse(t *testing.T) {
+	ret := map[string]interface{}{"Message": "", "Status": "fail"}
+	if got := initDefaultResponse(); !reflect.DeepEqual(got, ret) {
+		t.Errorf("initDefaultResponse() = %v, want %v", got, ret)
+	}
 }
