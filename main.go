@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/shin5ok/shoutouthostnamegcp"
 	pb "github.com/shin5ok/urlmap-front/pb"
 
 	"github.com/gin-gonic/gin"
@@ -28,6 +29,7 @@ func init() {
 	zerolog.LevelFieldName = "severity"
 	zerolog.TimestampFieldName = "timestamp"
 	zerolog.TimeFieldFormat = time.RFC3339Nano
+	shoutouthostnamegcp.SetSigHandler(os.Getenv("SLACK_URL"), os.Getenv("SLACK_CHANNEL"))
 
 }
 
