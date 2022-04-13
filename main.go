@@ -20,7 +20,7 @@ import (
 
 var (
 	g          = gin.Default()
-	version    = "0.20"
+	version    = "0.21"
 	portString = fmt.Sprintf(":%s", os.Getenv("PORT"))
 )
 
