@@ -210,7 +210,7 @@ func main() {
 	m.Expose(forProm)
 
 	go func() {
-		forProm.Run(":8081")
+		forProm.Run(":18080")
 	}()
 
 	if portString == ":" {
