@@ -1,14 +1,16 @@
 syntax = "proto3";
 import "google/protobuf/empty.proto";
+option go_package = "github.com/shin5ok/urlmap-api/pb/urlmap";
 package urlmap;
 
 service Redirection {
-  rpc GetOrgByPath (RedirectPath) returns (OrgUrl);
-  rpc GetInfoByUser (User) returns (ArrayRedirectData);
-  rpc SetInfo (RedirectData) returns (OrgUrl);
-  rpc SetUser (User) returns (User);
-  rpc RemoveUser (User) returns (google.protobuf.Empty);
-  rpc ListUsers (google.protobuf.Empty) returns (Users);
+  rpc GetOrgByPath (RedirectPath) returns (OrgUrl) {};
+  rpc GetInfoByUser (User) returns (ArrayRedirectData) {};
+  rpc SetInfo (RedirectData) returns (OrgUrl) {};
+  rpc SetUser (User) returns (User) {};
+  rpc RemoveUser (User) returns (google.protobuf.Empty) {};
+  rpc ListUsers (google.protobuf.Empty) returns (Users) {};
+  rpc PingPongMessage (Message) returns (Message) {};
 }
 
 message RedirectPath {
@@ -54,4 +56,12 @@ message RedirectInfo {
 
 message Users {
   repeated User users = 1;
+}
+
+message Message {
+  string name = 1;
+  oneof show_mode_oneof {
+    string mode = 2;
+    bool isresponse = 3;
+  }
 }
